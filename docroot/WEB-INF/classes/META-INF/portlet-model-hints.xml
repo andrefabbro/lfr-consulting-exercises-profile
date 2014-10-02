@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="com.amf.user.profile.model.GeneralProfile">
+		<field name="generalProfileId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="userId" type="long" />
+		<field name="userName" type="String" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="aboutMe" type="String">
+			<hint-collection name="TEXTAREA" />
+			<hint name="max-length">5000</hint>
+		</field>
+		<field name="favoriteQuotes" type="String">
+			<hint-collection name="TEXTAREA" />
+			<hint name="max-length">5000</hint>
+		</field>
+	</model>
+	<model name="com.amf.user.profile.model.MovieInterest">
+		<field name="movieInterestId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="userId" type="long" />
+		<field name="userName" type="String" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="favoriteMovie" type="String">
+			<hint name="max-length">500</hint>
+		</field>
+		<field name="favoriteGenre" type="String" />
+		<field name="leastFavMovie" type="String">
+			<hint name="max-length">500</hint>
+		</field>
+		<field name="favoriteActor" type="String">
+			<hint name="max-length">100</hint>
+		</field>
+	</model>
+</model-hints>

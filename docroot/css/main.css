@@ -1,0 +1,14 @@
+.extfieldcontainer {
+	display: block;
+	clear: both;
+}
+
+.extlabel {
+	float: left;
+	width: 160px;
+}
+
+.extvalue {
+	float: left;
+	font-weight: bold;
+}

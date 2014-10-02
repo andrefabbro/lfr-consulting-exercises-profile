@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 6.2.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_6_2_0.dtd">
+
+<service-builder package-path="com.amf.user.profile">
+	<author>andrefabbro</author>
+	<namespace>UserProfile</namespace>
+
+	<entity name="GeneralProfile" local-service="true"
+		remote-service="true">
+
+		<!-- PK fields -->
+
+		<column name="generalProfileId" type="long" primary="true" />
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="userId" type="long" />
+		<column name="userName" type="String" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+
+		<column name="aboutMe" type="String" />
+		<column name="favoriteQuotes" type="String" />
+
+		<!-- Finder Methods -->
+		<finder name="UserId" return-type="GeneralInformation" unique="true">
+			<finder-column name="userId" />
+		</finder>
+
+	</entity>
+
+	<entity name="MovieInterest" local-service="true"
+		remote-service="true">
+
+		<!-- PK fields -->
+
+		<column name="movieInterestId" type="long" primary="true" />
+
+		<!-- Group instance -->
+
+		<column name="groupId" type="long" />
+
+		<!-- Audit fields -->
+
+		<column name="companyId" type="long" />
+		<column name="userId" type="long" />
+		<column name="userName" type="String" />
+		<column name="createDate" type="Date" />
+		<column name="modifiedDate" type="Date" />
+
+		<!-- Other fields -->
+
+		<column name="favoriteMovie" type="String" />
+		<column name="favoriteGenre" type="String" />
+		<column name="leastFavMovie" type="String" />
+		<column name="favoriteActor" type="String" />
+
+		<!-- Finder Methods -->
+		<finder name="UserId" return-type="MovieInterest" unique="true">
+			<finder-column name="userId" />
+		</finder>
+
+	</entity>
+</service-builder>

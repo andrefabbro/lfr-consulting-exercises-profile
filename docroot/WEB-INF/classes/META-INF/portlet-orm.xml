@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd">
+	<persistence-unit-metadata>
+		<xml-mapping-metadata-complete/>
+		<persistence-unit-defaults>
+			<access>PROPERTY</access>
+		</persistence-unit-defaults>
+	</persistence-unit-metadata>
+	<mapped-superclass class="com.amf.user.profile.model.impl.GeneralProfileModelImpl">
+		<attributes>
+			<id name="generalProfileId" />
+			<basic name="groupId" />
+			<basic name="companyId" />
+			<basic name="userId" />
+			<basic name="userName" />
+			<basic name="createDate">
+				<temporal>TIMESTAMP</temporal>
+			</basic>
+			<basic name="modifiedDate">
+				<temporal>TIMESTAMP</temporal>
+			</basic>
+			<basic name="aboutMe" />
+			<basic name="favoriteQuotes" />
+			<transient name="modelAttributes" />
+			<transient name="primaryKey" />
+			<transient name="primaryKeyObj" />
+			<transient name="userUuid" />
+		</attributes>
+	</mapped-superclass>
+	<mapped-superclass class="com.amf.user.profile.model.impl.MovieInterestModelImpl">
+		<attributes>
+			<id name="movieInterestId" />
+			<basic name="groupId" />
+			<basic name="companyId" />
+			<basic name="userId" />
+			<basic name="userName" />
+			<basic name="createDate">
+				<temporal>TIMESTAMP</temporal>
+			</basic>
+			<basic name="modifiedDate">
+				<temporal>TIMESTAMP</temporal>
+			</basic>
+			<basic name="favoriteMovie" />
+			<basic name="favoriteGenre" />
+			<basic name="leastFavMovie" />
+			<basic name="favoriteActor" />
+			<transient name="modelAttributes" />
+			<transient name="primaryKey" />
+			<transient name="primaryKeyObj" />
+			<transient name="userUuid" />
+		</attributes>
+	</mapped-superclass>
+	<entity class="com.amf.user.profile.model.impl.GeneralProfileImpl" name="GeneralProfile">
+		<table name="UserProfile_GeneralProfile" />
+		<attributes />
+	</entity>
+	<entity class="com.amf.user.profile.model.impl.MovieInterestImpl" name="MovieInterest">
+		<table name="UserProfile_MovieInterest" />
+		<attributes />
+	</entity>
+</entity-mappings>

@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!DOCTYPE routes PUBLIC "-//Liferay//DTD Friendly URL Routes 6.2.0//EN"
+"http://www.liferay.com/dtd/liferay-friendly-url-routes_6_2_0.dtd">
+
+<routes>
+	<route>
+		<pattern>/view/{screenName}</pattern>
+		<generated-parameter name="screenName">{screenName}</generated-parameter>
+		<!-- <ignored-parameter name="p_auth" />
+		<ignored-parameter name="p_p_mode" />
+		<ignored-parameter name="p_p_lifecycle" /> -->
+		<overridden-parameter name="p_p_mode">VIEW</overridden-parameter>
+		<!-- <overridden-parameter name="p_p_lifecycle">0</overridden-parameter> -->
+	</route>
+	<route>
+		<pattern>/edit</pattern>
+		<!-- <ignored-parameter name="p_auth" />
+		<ignored-parameter name="p_p_mode" />
+		<ignored-parameter name="p_p_lifecycle" /> -->
+		<overridden-parameter name="p_p_mode">EDIT</overridden-parameter>
+		<!-- <overridden-parameter name="p_p_lifecycle">0</overridden-parameter> -->
+	</route>
+	<route>
+		<pattern>/privacy</pattern>
+		<!-- <ignored-parameter name="p_auth" />
+		<ignored-parameter name="p_p_mode" />
+		<ignored-parameter name="p_p_lifecycle" /> -->
+		<overridden-parameter name="p_p_mode">CONFIG</overridden-parameter>
+		<!-- <overridden-parameter name="p_p_lifecycle">0</overridden-parameter> -->
+	</route>
+</routes>

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" default-destroy-method="destroy" default-init-method="afterPropertiesSet" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+	<bean id="com.amf.user.profile.service.GeneralProfileLocalService" class="com.amf.user.profile.service.impl.GeneralProfileLocalServiceImpl" />
+	<bean id="com.amf.user.profile.service.GeneralProfileService" class="com.amf.user.profile.service.impl.GeneralProfileServiceImpl" />
+	<bean id="com.amf.user.profile.service.persistence.GeneralProfilePersistence" class="com.amf.user.profile.service.persistence.GeneralProfilePersistenceImpl" parent="basePersistence" />
+	<bean id="com.amf.user.profile.service.MovieInterestLocalService" class="com.amf.user.profile.service.impl.MovieInterestLocalServiceImpl" />
+	<bean id="com.amf.user.profile.service.MovieInterestService" class="com.amf.user.profile.service.impl.MovieInterestServiceImpl" />
+	<bean id="com.amf.user.profile.service.persistence.MovieInterestPersistence" class="com.amf.user.profile.service.persistence.MovieInterestPersistenceImpl" parent="basePersistence" />
+</beans>
