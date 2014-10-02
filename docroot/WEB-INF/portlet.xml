@@ -44,4 +44,37 @@
 			<role-name>user</role-name>
 		</security-role-ref>
 	</portlet>
+	<portlet>
+		<portlet-name>profile-search</portlet-name>
+		<display-name>Profile Search</display-name>
+		<portlet-class>
+			com.amf.user.profile.ProfileSearch
+		</portlet-class>
+		<init-param>
+			<name>view-template</name>
+			<value>/html/profilesearch/view.jsp</value>
+		</init-param>
+		<expiration-cache>0</expiration-cache>
+		<supports>
+			<mime-type>text/html</mime-type>
+			<portlet-mode>view</portlet-mode>
+		</supports>
+		<portlet-info>
+			<title>Profile Search</title>
+			<short-title>Profile Search</short-title>
+			<keywords></keywords>
+		</portlet-info>
+		<security-role-ref>
+			<role-name>administrator</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>guest</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>power-user</role-name>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>user</role-name>
+		</security-role-ref>
+	</portlet>
 </portlet-app>

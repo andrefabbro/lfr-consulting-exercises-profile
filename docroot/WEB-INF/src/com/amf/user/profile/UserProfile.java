@@ -193,40 +193,6 @@ public class UserProfile extends MVCPortlet {
 		request.setAttribute("movieInterest", movieInterest);
 	}
 
-	/**
-	 * Support method to update the user in database
-	 * 
-	 * @throws SystemException
-	 * @throws PortalException
-	 */
-	private void saveUserDetails(
-		PortletRequest request, String firstName, String lastName,
-		boolean male, int birthdayMonth, int birthdayDay, int birthdayYear)
-		throws SystemException, PortalException {
-
-		User user = UserLocalServiceUtil.fetchUser(userId);
-
-		ServiceContext serviceContext =
-			ServiceContextFactory.getInstance(request);
-
-		UserLocalServiceUtil.updateUser(
-			user.getPrimaryKey(), null, user.getPassword(), user.getPassword(),
-			false, user.getReminderQueryQuestion(),
-			user.getReminderQueryAnswer(), user.getScreenName(),
-			user.getEmailAddress(), user.getFacebookId(), user.getOpenId(),
-			user.getLanguageId(), user.getTimeZoneId(), user.getGreeting(),
-			user.getComments(), firstName, user.getMiddleName(), lastName,
-			selectedContact.getPrefixId(), selectedContact.getSuffixId(), male,
-			birthdayMonth, birthdayDay, birthdayYear,
-			selectedContact.getSmsSn(), selectedContact.getAimSn(),
-			selectedContact.getFacebookSn(), selectedContact.getIcqSn(),
-			selectedContact.getJabberSn(), selectedContact.getMsnSn(),
-			selectedContact.getMySpaceSn(), selectedContact.getSkypeSn(),
-			selectedContact.getTwitterSn(), selectedContact.getYmSn(),
-			user.getJobTitle(), user.getGroupIds(), user.getOrganizationIds(),
-			user.getRoleIds(), null, user.getUserGroupIds(), serviceContext);
-	}
-
 	@Override
 	public void doView(RenderRequest request, RenderResponse response)
 		throws IOException, PortletException {
@@ -457,6 +423,12 @@ public class UserProfile extends MVCPortlet {
 				// retrieve the user profile
 				this.fetchUserProfileByUser(request, selectedUser);
 
+				Calendar birthdayCalendar = Calendar.getInstance();
+				birthdayCalendar.setTime(birthday);
+
+				ServiceContext serviceContext =
+					ServiceContextFactory.getInstance(request);
+
 				// creates the profile objects if the user haven't yet
 				if (generalProfile == null)
 					generalProfile =
@@ -466,9 +438,6 @@ public class UserProfile extends MVCPortlet {
 						MovieInterestLocalServiceUtil.createMovieInterest(0);
 
 				// gets the form input and populate the profile objects
-
-				Calendar birthdayCalendar = Calendar.getInstance();
-				birthdayCalendar.setTime(birthday);
 
 				generalProfile.setAboutMe(ParamUtil.getString(
 					request, "about_me"));
@@ -484,70 +453,11 @@ public class UserProfile extends MVCPortlet {
 				movieInterest.setFavoriteActor(ParamUtil.getString(
 					request, "favorite_actor"));
 
-				// execute the update or insert
-
-				selectedContact =
-					ContactLocalServiceUtil.updateContact(
-						selectedContact.getContactId(),
-						selectedContact.getEmailAddress(), firstName,
-						selectedContact.getMiddleName(), lastName,
-						selectedContact.getPrefixId(),
-						selectedContact.getSuffixId(), male,
-						birthdayCalendar.get(Calendar.MONTH),
-						birthdayCalendar.get(Calendar.DAY_OF_MONTH),
-						birthdayCalendar.get(Calendar.YEAR),
-						selectedContact.getSmsSn(), selectedContact.getAimSn(),
-						selectedContact.getFacebookSn(),
-						selectedContact.getIcqSn(),
-						selectedContact.getJabberSn(),
-						selectedContact.getMsnSn(),
-						selectedContact.getMySpaceSn(),
-						selectedContact.getSkypeSn(),
-						selectedContact.getTwitterSn(),
-						selectedContact.getYmSn(),
-						selectedContact.getJobTitle());
-
-				// if is the first time the user is filling the profile, adds
-				// the contact resource
-				if (generalProfile.getGeneralProfileId() == 0)
-					ResourceLocalServiceUtil.addResources(
-						companyId, groupId, userId, BASIC_INFO_DOMAIN_NAME,
-						selectedContact.getPrimaryKey(), false, true, true);
-
-				// update the user register
-				this.saveUserDetails(
-					request, firstName, lastName, male,
-					birthdayCalendar.get(Calendar.MONTH),
-					birthdayCalendar.get(Calendar.DAY_OF_MONTH),
-					birthdayCalendar.get(Calendar.YEAR));
-
-				generalProfile =
-					(generalProfile.getGeneralProfileId() == 0)
-						? GeneralProfileServiceUtil.addGeneralProfile(
-							groupId, companyId, userId,
-							selectedUser.getLogin(),
-							generalProfile.getAboutMe(),
-							generalProfile.getFavoriteQuotes())
-						: GeneralProfileServiceUtil.updateGeneralProfile(
-							generalProfile.getGeneralProfileId(), groupId,
-							generalProfile.getAboutMe(),
-							generalProfile.getFavoriteQuotes());
-
-				movieInterest =
-					(movieInterest.getMovieInterestId() == 0)
-						? MovieInterestServiceUtil.addMovieInterest(
-							groupId, companyId, userId,
-							selectedUser.getLogin(),
-							movieInterest.getFavoriteMovie(),
-							movieInterest.getFavoriteGenre(),
-							movieInterest.getLeastFavMovie(),
-							movieInterest.getFavoriteActor())
-						: MovieInterestServiceUtil.updateMovieInterest(
-							movieInterest.getMovieInterestId(), groupId,
-							movieInterest.getFavoriteMovie(),
-							movieInterest.getFavoriteGenre(),
-							movieInterest.getLeastFavMovie(),
-							movieInterest.getFavoriteActor());
+				// perform all business login through Util class
+				UserProfilePersistenceUtil.saveUserProfile(
+					companyId, groupId, userId, selectedContact,
+					generalProfile, movieInterest, firstName, lastName,
+					birthday, male, serviceContext);
 
 				// prepare the view
 				this.setRequestAttributesUserProfile(request);

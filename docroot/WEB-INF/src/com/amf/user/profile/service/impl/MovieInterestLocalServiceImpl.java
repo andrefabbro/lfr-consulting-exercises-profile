@@ -18,6 +18,9 @@ import com.amf.user.profile.model.MovieInterest;
 import com.amf.user.profile.service.base.MovieInterestLocalServiceBaseImpl;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.search.Indexer;
+import com.liferay.portal.kernel.search.IndexerRegistryUtil;
+import com.liferay.portal.kernel.search.SearchException;
 
 import java.util.Date;
 
@@ -77,6 +80,8 @@ public class MovieInterestLocalServiceImpl
 			e.printStackTrace();
 		}
 
+		reindex(movieInterest);
+
 		return movieInterest;
 	}
 
@@ -97,8 +102,20 @@ public class MovieInterestLocalServiceImpl
 
 		movieInterest = movieInterestPersistence.update(movieInterest);
 
-		return movieInterest;
+		reindex(movieInterest);
 
+		return movieInterest;
+	}
+
+	private void reindex(MovieInterest movieInterest) {
+
+		Indexer indexer = IndexerRegistryUtil.getIndexer(MovieInterest.class);
+		try {
+			indexer.reindex(movieInterest);
+		}
+		catch (SearchException e) {
+			System.out.println("Search Exception: " + e.getMessage());
+		}
 	}
 
 }

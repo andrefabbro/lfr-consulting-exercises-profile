@@ -27,7 +27,7 @@ if (generalProfile != null &&
 if (movieInterest != null &&
 	permissionChecker.hasPermission(
 		scopeGroupId, "com.amf.user.profile.model.MovieInterest",
-		generalProfile.getPrimaryKey(), ActionKeys.VIEW))
+		movieInterest.getPrimaryKey(), ActionKeys.VIEW))
 	canViewMovieInterest = true;
 %>
 

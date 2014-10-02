@@ -18,6 +18,9 @@ import com.amf.user.profile.model.GeneralProfile;
 import com.amf.user.profile.service.base.GeneralProfileLocalServiceBaseImpl;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.search.Indexer;
+import com.liferay.portal.kernel.search.IndexerRegistryUtil;
+import com.liferay.portal.kernel.search.SearchException;
 
 import java.util.Date;
 
@@ -72,8 +75,10 @@ public class GeneralProfileLocalServiceImpl
 				generalProfile.getGeneralProfileId(), false, true, true);
 		}
 		catch (PortalException e) {
-			e.printStackTrace();
+			System.out.println("Resource Exception: " + e.getMessage());
 		}
+
+		this.reindex(generalProfile);
 
 		return generalProfile;
 	}
@@ -92,6 +97,19 @@ public class GeneralProfileLocalServiceImpl
 
 		generalProfile = generalProfilePersistence.update(generalProfile);
 
+		this.reindex(generalProfile);
+
 		return generalProfile;
+	}
+
+	private void reindex(GeneralProfile generalProfile) {
+
+		Indexer indexer = IndexerRegistryUtil.getIndexer(GeneralProfile.class);
+		try {
+			indexer.reindex(generalProfile);
+		}
+		catch (SearchException e) {
+			System.out.println("Search Exception: " + e.getMessage());
+		}
 	}
 }

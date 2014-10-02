@@ -7,6 +7,9 @@
 		<portlet-name>user-profile</portlet-name>
 		<icon>/icon.png</icon>
 		
+		<indexer-class>com.amf.user.profile.search.GeneralProfileIndexer</indexer-class>
+		<indexer-class>com.amf.user.profile.search.MovieInterestIndexer</indexer-class>
+		
 		<friendly-url-mapper-class>com.liferay.portal.kernel.portlet.DefaultFriendlyURLMapper</friendly-url-mapper-class>
 		<friendly-url-mapping>profile</friendly-url-mapping>
 		<friendly-url-routes>com/amf/user/profile/userprofile-friendly-url-routes.xml</friendly-url-routes>
@@ -16,6 +19,15 @@
 			/js/main.js
 		</footer-portlet-javascript>
 		<css-class-wrapper>user-profile-portlet</css-class-wrapper>
+	</portlet>
+	<portlet>
+		<portlet-name>profile-search</portlet-name>
+		<icon>/icon.png</icon>
+		<header-portlet-css>/css/main.css</header-portlet-css>
+		<footer-portlet-javascript>
+			/js/main.js
+		</footer-portlet-javascript>
+		<css-class-wrapper>profile-search-portlet</css-class-wrapper>
 	</portlet>
 	<role-mapper>
 		<role-name>administrator</role-name>
