@@ -25,6 +25,8 @@ import com.liferay.portal.service.ContactLocalServiceUtil;
 import com.liferay.portal.service.ResourceLocalServiceUtil;
 import com.liferay.portal.service.ResourcePermissionLocalServiceUtil;
 import com.liferay.portal.service.RoleLocalServiceUtil;
+import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
@@ -189,6 +191,40 @@ public class UserProfile extends MVCPortlet {
 		request.setAttribute("selectedContact", selectedContact);
 		request.setAttribute("generalProfile", generalProfile);
 		request.setAttribute("movieInterest", movieInterest);
+	}
+
+	/**
+	 * Support method to update the user in database
+	 * 
+	 * @throws SystemException
+	 * @throws PortalException
+	 */
+	private void saveUserDetails(
+		PortletRequest request, String firstName, String lastName,
+		boolean male, int birthdayMonth, int birthdayDay, int birthdayYear)
+		throws SystemException, PortalException {
+
+		User user = UserLocalServiceUtil.fetchUser(userId);
+
+		ServiceContext serviceContext =
+			ServiceContextFactory.getInstance(request);
+
+		UserLocalServiceUtil.updateUser(
+			user.getPrimaryKey(), null, user.getPassword(), user.getPassword(),
+			false, user.getReminderQueryQuestion(),
+			user.getReminderQueryAnswer(), user.getScreenName(),
+			user.getEmailAddress(), user.getFacebookId(), user.getOpenId(),
+			user.getLanguageId(), user.getTimeZoneId(), user.getGreeting(),
+			user.getComments(), firstName, user.getMiddleName(), lastName,
+			selectedContact.getPrefixId(), selectedContact.getSuffixId(), male,
+			birthdayMonth, birthdayDay, birthdayYear,
+			selectedContact.getSmsSn(), selectedContact.getAimSn(),
+			selectedContact.getFacebookSn(), selectedContact.getIcqSn(),
+			selectedContact.getJabberSn(), selectedContact.getMsnSn(),
+			selectedContact.getMySpaceSn(), selectedContact.getSkypeSn(),
+			selectedContact.getTwitterSn(), selectedContact.getYmSn(),
+			user.getJobTitle(), user.getGroupIds(), user.getOrganizationIds(),
+			user.getRoleIds(), null, user.getUserGroupIds(), serviceContext);
 	}
 
 	@Override
@@ -477,6 +513,13 @@ public class UserProfile extends MVCPortlet {
 					ResourceLocalServiceUtil.addResources(
 						companyId, groupId, userId, BASIC_INFO_DOMAIN_NAME,
 						selectedContact.getPrimaryKey(), false, true, true);
+
+				// update the user register
+				this.saveUserDetails(
+					request, firstName, lastName, male,
+					birthdayCalendar.get(Calendar.MONTH),
+					birthdayCalendar.get(Calendar.DAY_OF_MONTH),
+					birthdayCalendar.get(Calendar.YEAR));
 
 				generalProfile =
 					(generalProfile.getGeneralProfileId() == 0)
