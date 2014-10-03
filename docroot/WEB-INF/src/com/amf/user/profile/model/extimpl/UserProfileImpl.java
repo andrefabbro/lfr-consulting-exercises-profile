@@ -2,7 +2,7 @@
  * 
  */
 
-package com.amf.user.profile.model.impl;
+package com.amf.user.profile.model.extimpl;
 
 /**
  * @author andrefabbro

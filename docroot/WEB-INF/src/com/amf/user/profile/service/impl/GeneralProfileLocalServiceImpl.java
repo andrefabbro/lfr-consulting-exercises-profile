@@ -40,6 +40,12 @@ import java.util.Date;
 public class GeneralProfileLocalServiceImpl
 	extends GeneralProfileLocalServiceBaseImpl {
 
+	public GeneralProfile fetchGeneralProfile(long generalProfileId)
+		throws SystemException {
+
+		return this.generalProfilePersistence.fetchByPrimaryKey(generalProfileId);
+	}
+
 	public GeneralProfile getByUserId(long userId)
 		throws SystemException {
 

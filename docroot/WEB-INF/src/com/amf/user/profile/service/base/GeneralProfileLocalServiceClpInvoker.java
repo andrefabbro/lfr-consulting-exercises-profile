@@ -114,20 +114,24 @@ public class GeneralProfileLocalServiceClpInvoker {
 
 		_methodParameterTypes41 = new String[] { "java.lang.String" };
 
-		_methodName46 = "getByUserId";
+		_methodName46 = "fetchGeneralProfile";
 
 		_methodParameterTypes46 = new String[] { "long" };
 
-		_methodName47 = "addGeneralProfile";
+		_methodName47 = "getByUserId";
 
-		_methodParameterTypes47 = new String[] {
+		_methodParameterTypes47 = new String[] { "long" };
+
+		_methodName48 = "addGeneralProfile";
+
+		_methodParameterTypes48 = new String[] {
 				"long", "long", "long", "java.lang.String", "java.lang.String",
 				"java.lang.String"
 			};
 
-		_methodName48 = "updateGeneralProfile";
+		_methodName49 = "updateGeneralProfile";
 
-		_methodParameterTypes48 = new String[] {
+		_methodParameterTypes49 = new String[] {
 				"long", "java.lang.String", "java.lang.String"
 			};
 	}
@@ -235,11 +239,16 @@ public class GeneralProfileLocalServiceClpInvoker {
 
 		if (_methodName46.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes46, parameterTypes)) {
-			return GeneralProfileLocalServiceUtil.getByUserId(((Long)arguments[0]).longValue());
+			return GeneralProfileLocalServiceUtil.fetchGeneralProfile(((Long)arguments[0]).longValue());
 		}
 
 		if (_methodName47.equals(name) &&
 				Arrays.deepEquals(_methodParameterTypes47, parameterTypes)) {
+			return GeneralProfileLocalServiceUtil.getByUserId(((Long)arguments[0]).longValue());
+		}
+
+		if (_methodName48.equals(name) &&
+				Arrays.deepEquals(_methodParameterTypes48, parameterTypes)) {
 			return GeneralProfileLocalServiceUtil.addGeneralProfile(((Long)arguments[0]).longValue(),
 				((Long)arguments[1]).longValue(),
 				((Long)arguments[2]).longValue(),
@@ -247,8 +256,8 @@ public class GeneralProfileLocalServiceClpInvoker {
 				(java.lang.String)arguments[5]);
 		}
 
-		if (_methodName48.equals(name) &&
-				Arrays.deepEquals(_methodParameterTypes48, parameterTypes)) {
+		if (_methodName49.equals(name) &&
+				Arrays.deepEquals(_methodParameterTypes49, parameterTypes)) {
 			return GeneralProfileLocalServiceUtil.updateGeneralProfile(((Long)arguments[0]).longValue(),
 				(java.lang.String)arguments[1], (java.lang.String)arguments[2]);
 		}
@@ -298,4 +307,6 @@ public class GeneralProfileLocalServiceClpInvoker {
 	private String[] _methodParameterTypes47;
 	private String _methodName48;
 	private String[] _methodParameterTypes48;
+	private String _methodName49;
+	private String[] _methodParameterTypes49;
 }

@@ -7,7 +7,7 @@ package com.amf.user.profile.search;
 import com.amf.user.profile.model.GeneralProfile;
 import com.amf.user.profile.model.MovieInterest;
 import com.amf.user.profile.model.UserProfile;
-import com.amf.user.profile.model.impl.UserProfileImpl;
+import com.amf.user.profile.model.extimpl.UserProfileImpl;
 import com.amf.user.profile.service.GeneralProfileServiceUtil;
 import com.amf.user.profile.service.MovieInterestServiceUtil;
 import com.liferay.portal.kernel.search.BaseIndexer;
