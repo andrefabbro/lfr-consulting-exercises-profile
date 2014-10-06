@@ -8,16 +8,26 @@ import com.amf.user.profile.model.GeneralProfile;
 import com.amf.user.profile.model.MovieInterest;
 import com.amf.user.profile.model.UserProfile;
 import com.amf.user.profile.model.UserProfileModel;
+import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSON;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.model.BaseModel;
+import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.Contact;
 import com.liferay.portal.model.impl.BaseModelImpl;
+import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.util.PortalUtil;
+import com.liferay.portlet.expando.model.ExpandoBridge;
+import com.liferay.portlet.expando.util.ExpandoBridgeFactoryUtil;
 
 import java.io.Serializable;
+import java.lang.reflect.Proxy;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author andrefabbro
@@ -43,6 +53,18 @@ public class UserProfileModelImpl extends BaseModelImpl<UserProfile>
 
 	private MovieInterest _movieInterest;
 
+	private String _aboutMe;
+
+	private String _favoriteQuotes;
+
+	private String _favoriteActor;
+
+	private String _leastFavMovie;
+
+	private String _favoriteGenre;
+
+	private String _favoriteMovie;
+
 	@Override
 	public void createFromAttributes(
 		Contact contact, GeneralProfile generalProfile,
@@ -62,7 +84,13 @@ public class UserProfileModelImpl extends BaseModelImpl<UserProfile>
 		_contact = contact;
 		_generalProfile = generalProfile;
 		_movieInterest = movieInterest;
-
+		
+		_aboutMe = generalProfile.getAboutMe();
+		_favoriteQuotes = generalProfile.getFavoriteQuotes();
+		_favoriteActor = movieInterest.getFavoriteActor();
+		_leastFavMovie = movieInterest.getLeastFavMovie();
+		_favoriteGenre = movieInterest.getFavoriteGenre();
+		_favoriteMovie = movieInterest.getFavoriteMovie();
 	}
 
 	@Override
@@ -138,6 +166,78 @@ public class UserProfileModelImpl extends BaseModelImpl<UserProfile>
 	}
 
 	@Override
+	public String getAboutMe() {
+
+		return _aboutMe;
+	}
+
+	@Override
+	public void setAboutMe(String aboutMe) {
+
+		_aboutMe = aboutMe;
+	}
+
+	@Override
+	public String getFavoriteMovie() {
+
+		return _favoriteMovie;
+	}
+
+	@Override
+	public void setFavoriteMovie(String favoriteMovie) {
+
+		_favoriteMovie = favoriteMovie;
+	}
+
+	@Override
+	public String getFavoriteGenre() {
+
+		return _favoriteGenre;
+	}
+
+	@Override
+	public void setFavoriteGenre(String favoriteGenre) {
+
+		_favoriteGenre = favoriteGenre;
+	}
+
+	@Override
+	public String getLeastFavMovie() {
+
+		return _leastFavMovie;
+	}
+
+	@Override
+	public void setLeastFavMovie(String leastFavMovie) {
+
+		_leastFavMovie = leastFavMovie;
+	}
+
+	@Override
+	public String getFavoriteActor() {
+
+		return _favoriteActor;
+	}
+
+	@Override
+	public void setFavoriteActor(String favoriteActor) {
+
+		_favoriteActor = favoriteActor;
+	}
+
+	@Override
+	public String getFavoriteQuotes() {
+
+		return _favoriteQuotes;
+	}
+
+	@Override
+	public void setFavoriteQuotes(String favoriteQuotes) {
+
+		_favoriteQuotes = favoriteQuotes;
+	}
+
+	@Override
 	public long getGroupId() {
 
 		return _groupId;
@@ -207,7 +307,7 @@ public class UserProfileModelImpl extends BaseModelImpl<UserProfile>
 	@Override
 	public Date getCreateDate() {
 
-		// TODO Auto-generated method stub
+		_generalProfile.getCreateDate();
 		return null;
 	}
 
@@ -221,7 +321,7 @@ public class UserProfileModelImpl extends BaseModelImpl<UserProfile>
 	@Override
 	public Date getModifiedDate() {
 
-		// TODO Auto-generated method stub
+		_generalProfile.getModifiedDate();
 		return null;
 	}
 
@@ -305,9 +405,48 @@ public class UserProfileModelImpl extends BaseModelImpl<UserProfile>
 		userProfileImpl.setGeneralProfile(getGeneralProfile());
 		userProfileImpl.setMovieInterest(getMovieInterest());
 
+		userProfileImpl.setAboutMe(getAboutMe());
+		userProfileImpl.setFavoriteQuotes(getFavoriteQuotes());
+		userProfileImpl.setFavoriteMovie(getFavoriteMovie());
+		userProfileImpl.setFavoriteGenre(getFavoriteGenre());
+		userProfileImpl.setLeastFavMovie(getLeastFavMovie());
+		userProfileImpl.setFavoriteActor(getFavoriteActor());
+
 		userProfileImpl.resetOriginalValues();
 
 		return userProfileImpl;
+	}
+
+	@Override
+	public ExpandoBridge getExpandoBridge() {
+
+		ExpandoBridge expandoBridge =
+			ExpandoBridgeFactoryUtil.getExpandoBridge(
+				getCompanyId(), getClass().getName());
+		return expandoBridge;
+	}
+
+	@Override
+	public Map<String, Object> getModelAttributes() {
+
+		Map<String, Object> result = new HashMap<String, Object>();
+
+		result.put("groupId", _groupId);
+		result.put("userId", _userId);
+		result.put("companyId", _companyId);
+		result.put("userName", _userName);
+		result.put("generalProfile", getGeneralProfile());
+		result.put("contact", getContact());
+		result.put("movieInterest", getMovieInterest());
+
+		result.put("aboutMe", _aboutMe);
+		result.put("favoriteQuotes", _favoriteQuotes);
+		result.put("favoriteMovie", _favoriteMovie);
+		result.put("favoriteGenre", _favoriteGenre);
+		result.put("leastFavMovie", _leastFavMovie);
+		result.put("favoriteActor", _favoriteActor);
+
+		return result;
 	}
 
 }

@@ -10,6 +10,7 @@ import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.Contact;
 import com.liferay.portal.model.GroupedModel;
+import com.liferay.portal.model.ResourcedModel;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.expando.model.ExpandoBridge;
 
@@ -40,6 +41,35 @@ public interface UserProfileModel extends BaseModel<UserProfile>, GroupedModel {
 	public Contact getContact();
 
 	public void setContact(Contact contact);
+	
+	public String getAboutMe();
+
+	public void setAboutMe(String aboutMe);
+
+	@AutoEscape
+	public String getFavoriteMovie();
+
+	public void setFavoriteMovie(String favoriteMovie);
+	
+	@AutoEscape
+	public String getFavoriteGenre();
+	
+	public void setFavoriteGenre(String favoriteGenre);
+	
+	@AutoEscape
+	public String getLeastFavMovie();
+	
+	public void setLeastFavMovie(String leastFavMovie);
+	
+	@AutoEscape
+	public String getFavoriteActor();
+	
+	public void setFavoriteActor(String favoriteActor);
+	
+	@AutoEscape
+	public String getFavoriteQuotes();
+
+	public void setFavoriteQuotes(String favoriteQuotes);
 
 	public void createFromAttributes(
 		Contact contact, GeneralProfile generalProfile,

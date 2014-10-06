@@ -4,26 +4,24 @@
 
 package com.amf.user.profile.search;
 
-import com.amf.user.profile.model.GeneralProfile;
-import com.amf.user.profile.model.MovieInterest;
 import com.amf.user.profile.model.UserProfile;
-import com.amf.user.profile.model.extimpl.UserProfileImpl;
-import com.amf.user.profile.service.GeneralProfileServiceUtil;
-import com.amf.user.profile.service.MovieInterestServiceUtil;
+import com.amf.user.profile.service.UserProfilePersistenceUtil;
 import com.liferay.portal.kernel.search.BaseIndexer;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.DocumentImpl;
 import com.liferay.portal.kernel.search.Field;
+import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.SearchEngineUtil;
 import com.liferay.portal.kernel.search.Summary;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.model.Contact;
 import com.liferay.portal.security.permission.PermissionChecker;
-import com.liferay.portal.service.ContactLocalServiceUtil;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
 import javax.portlet.PortletURL;
@@ -90,23 +88,25 @@ public class UserProfileIndexer extends BaseIndexer {
 		UserProfile entity = (UserProfile) obj;
 
 		Document document = getBaseModelDocument(PORTLET_ID, entity);
+		
+		// document.addUID(PORTLET_ID, entity.getPrimaryKey());
 
 		document.addKeyword(Field.GROUP_ID, getSiteGroupId(entity.getGroupId()));
 		document.addKeyword(Field.SCOPE_GROUP_ID, entity.getGroupId());
 		document.addKeyword(Field.USER_ID, entity.getUserId());
-		document.addKeyword(Field.TITLE, entity.getUserName());
-		document.addKeyword(
-			Field.DESCRIPTION, entity.getContact().getFullName());
+		document.addKeyword(Field.USER_NAME, entity.getContact().getFullName());
 
-		document.addText("firstName", entity.getContact().getFirstName());
-		document.addText("lastName", entity.getContact().getLastName());
+		document.addText(Field.TITLE, entity.getUserName());
+		document.addText(Field.DESCRIPTION, entity.getContact().getFullName());
 
 		// content is the about me
 		document.addText(Field.CONTENT, entity.getGeneralProfile().getAboutMe());
 
+		// document.addText("firstName", entity.getContact().getFirstName());
+		// document.addText("lastName", entity.getContact().getLastName());
+
 		document.addText(
 			"favoriteQuotes", entity.getGeneralProfile().getFavoriteQuotes());
-
 		document.addText(
 			"favoriteMovie", entity.getMovieInterest().getFavoriteMovie());
 		document.addText(
@@ -115,6 +115,8 @@ public class UserProfileIndexer extends BaseIndexer {
 			"leastFavMovie", entity.getMovieInterest().getLeastFavMovie());
 		document.addText(
 			"favoriteActor", entity.getMovieInterest().getFavoriteActor());
+
+		System.out.println("Document lucene created with successfully");
 
 		return document;
 	}
@@ -151,24 +153,18 @@ public class UserProfileIndexer extends BaseIndexer {
 
 		UserProfile entity = (UserProfile) obj;
 		String searchEngineId = SearchEngineUtil.getDefaultSearchEngineId();
+
+		Document document = getDocument(entity);
+
 		SearchEngineUtil.updateDocument(
-			searchEngineId, entity.getCompanyId(), getDocument(entity));
+			searchEngineId, entity.getCompanyId(), document);
 	}
 
 	@Override
 	protected void doReindex(String className, long classPK)
 		throws Exception {
 
-		UserProfile entity = new UserProfileImpl();
-
-		Contact contact = ContactLocalServiceUtil.fetchContact(classPK);
-//		GeneralProfile generalProfile =
-//			GeneralProfileServiceUtil.
-//		MovieInterest movieInterest =
-//			MovieInterestServiceUtil.getByUserId(contact.getUserId(), 0);
-//
-//		entity.createFromAttributes(contact, generalProfile, movieInterest);
-
+		UserProfile entity = UserProfilePersistenceUtil.getUserProfile(classPK);
 		doReindex(entity);
 	}
 
@@ -184,39 +180,38 @@ public class UserProfileIndexer extends BaseIndexer {
 	private void doReindexAll(long companyId)
 		throws Exception {
 
-		// int count = UserProfileTOLocalServiceUtil.getUserProfileTOsCount();
+		int count = UserProfilePersistenceUtil.getUserProfileCount();
 
-		// int pages = count / Indexer.DEFAULT_INTERVAL;
-		//
-		// for (int i = 0; i <= pages; i++) {
-		// int start = (i * Indexer.DEFAULT_INTERVAL);
-		// int end = start + Indexer.DEFAULT_INTERVAL;
-		//
-		// reindexEntity(companyId, start, end);
-		// }
+		int pages = count / Indexer.DEFAULT_INTERVAL;
+
+		for (int i = 0; i <= pages; i++) {
+			int start = (i * Indexer.DEFAULT_INTERVAL);
+			int end = start + Indexer.DEFAULT_INTERVAL;
+
+			reindexEntity(companyId, start, end);
+		}
 	}
 
 	protected void reindexEntity(long companyId, int start, int end)
 		throws Exception {
 
-		// List<UserProfileTO> entities =
-		// UserProfileTOLocalServiceUtil.getUserProfileTOs(start, end);
-		//
-		// if (entities.isEmpty()) {
-		// return;
-		// }
-		//
-		// Collection<Document> documents = new ArrayList<Document>();
-		//
-		// for (UserProfileTO entity : entities) {
-		// Document document = getDocument(entity);
-		//
-		// documents.add(document);
-		// }
-		//
-		// String searchEngineId = SearchEngineUtil.getDefaultSearchEngineId();
-		// SearchEngineUtil.updateDocuments(searchEngineId, companyId,
-		// documents);
+		List<UserProfile> entities =
+			UserProfilePersistenceUtil.getUserProfiles(start, end);
+
+		if (entities.isEmpty()) {
+			return;
+		}
+
+		Collection<Document> documents = new ArrayList<Document>();
+
+		for (UserProfile entity : entities) {
+			Document document = getDocument(entity);
+
+			documents.add(document);
+		}
+
+		String searchEngineId = SearchEngineUtil.getDefaultSearchEngineId();
+		SearchEngineUtil.updateDocuments(searchEngineId, companyId, documents);
 	}
 
 	@Override

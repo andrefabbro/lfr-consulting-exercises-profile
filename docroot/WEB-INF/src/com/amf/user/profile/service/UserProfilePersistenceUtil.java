@@ -2,16 +2,17 @@
  * 
  */
 
-package com.amf.user.profile;
+package com.amf.user.profile.service;
 
 import com.amf.user.profile.model.GeneralProfile;
 import com.amf.user.profile.model.MovieInterest;
-import com.amf.user.profile.service.GeneralProfileLocalServiceUtil;
-import com.amf.user.profile.service.GeneralProfileServiceUtil;
-import com.amf.user.profile.service.MovieInterestLocalServiceUtil;
-import com.amf.user.profile.service.MovieInterestServiceUtil;
+import com.amf.user.profile.model.UserProfile;
+import com.amf.user.profile.model.extimpl.UserProfileImpl;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.search.Indexer;
+import com.liferay.portal.kernel.search.IndexerRegistryUtil;
+import com.liferay.portal.kernel.search.SearchException;
 import com.liferay.portal.model.Contact;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.ContactLocalServiceUtil;
@@ -19,8 +20,10 @@ import com.liferay.portal.service.ResourceLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.UserLocalServiceUtil;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author andrefabbro
@@ -29,6 +32,27 @@ public class UserProfilePersistenceUtil {
 
 	private final static String BASIC_INFO_DOMAIN_NAME =
 		"com.amf.user.profile.model.BasicInfo";
+
+	public static UserProfile getUserProfile(long primaryKey)
+		throws PortalException, SystemException {
+
+		// the primary key of UserProfile is the same as of GeneralProfile
+		GeneralProfile generalProfile =
+			GeneralProfileLocalServiceUtil.getGeneralProfile(primaryKey);
+
+		MovieInterest movieInterest =
+			MovieInterestLocalServiceUtil.getByUserId(generalProfile.getUserId());
+
+		User user = UserLocalServiceUtil.getUser(generalProfile.getUserId());
+
+		Contact contact =
+			ContactLocalServiceUtil.fetchContact(user.getContactId());
+
+		UserProfile userProfile = new UserProfileImpl();
+		userProfile.createFromAttributes(contact, generalProfile, movieInterest);
+
+		return userProfile;
+	}
 
 	/**
 	 * Perfom Business logic to save all user profile objects
@@ -115,6 +139,55 @@ public class UserProfilePersistenceUtil {
 					movieInterest.getFavoriteGenre(),
 					movieInterest.getLeastFavMovie(),
 					movieInterest.getFavoriteActor());
+
+		// creates a user profile wrapper object to reindex all together
+		UserProfile userProfile = new UserProfileImpl();
+		userProfile.createFromAttributes(contact, generalProfile, movieInterest);
+		reindex(userProfile);
+
+		try {
+			ResourceLocalServiceUtil.addResources(
+				userProfile.getCompanyId(), userProfile.getGroupId(),
+				userProfile.getUserId(), UserProfile.class.getName(),
+				userProfile.getUserProfileId(), false, true, true);
+		}
+		catch (PortalException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static int getUserProfileCount()
+		throws SystemException {
+
+		return GeneralProfileLocalServiceUtil.getGeneralProfilesCount();
+	}
+
+	public static List<UserProfile> getUserProfiles(int start, int end)
+		throws SystemException {
+
+		List<GeneralProfile> generalProfiles =
+			GeneralProfileLocalServiceUtil.getGeneralProfiles(start, end);
+		List<UserProfile> results = new ArrayList<UserProfile>();
+
+		for (GeneralProfile generalProfile : generalProfiles) {
+
+			MovieInterest movieInterest =
+				MovieInterestLocalServiceUtil.getByUserId(generalProfile.getUserId());
+
+			User user =
+				UserLocalServiceUtil.fetchUser(generalProfile.getUserId());
+
+			Contact contact =
+				ContactLocalServiceUtil.fetchContact(user.getContactId());
+
+			UserProfile userProfile = new UserProfileImpl();
+			userProfile.createFromAttributes(
+				contact, generalProfile, movieInterest);
+
+			results.add(userProfile);
+		}
+
+		return results;
 	}
 
 	/**
@@ -143,6 +216,17 @@ public class UserProfilePersistenceUtil {
 			contact.getTwitterSn(), contact.getYmSn(), user.getJobTitle(),
 			user.getGroupIds(), user.getOrganizationIds(), user.getRoleIds(),
 			null, user.getUserGroupIds(), serviceContext);
+	}
+
+	private static void reindex(UserProfile userProfile) {
+
+		Indexer indexer = IndexerRegistryUtil.getIndexer(UserProfile.class);
+		try {
+			indexer.reindex(userProfile);
+		}
+		catch (SearchException e) {
+			System.out.println("Search Exception: " + e.getMessage());
+		}
 	}
 
 }

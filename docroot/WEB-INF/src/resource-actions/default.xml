@@ -8,11 +8,13 @@
 			<supports>
 				<action-key>ADD_TO_PAGE</action-key>
 				<action-key>CONFIGURATION</action-key>
+				<action-key>PREFERENCES</action-key>
 				<action-key>VIEW</action-key>
 			</supports>
 			<site-member-defaults>
 				<action-key>VIEW</action-key>
 				<action-key>CONFIGURATION</action-key>
+				<action-key>PREFERENCES</action-key>
 			</site-member-defaults>
 			<guest-defaults>
 				<action-key>VIEW</action-key>
@@ -30,10 +32,12 @@
 			<supports>
 				<action-key>VIEW</action-key>
 				<action-key>UPDATE</action-key>
+				<action-key>PREFERENCES</action-key>
 			</supports>
 			<site-member-defaults>
 				<action-key>VIEW</action-key>
 				<action-key>UPDATE</action-key>
+				<action-key>PREFERENCES</action-key>
 			</site-member-defaults>
 			<guest-defaults>
 				<action-key>VIEW</action-key>
@@ -46,6 +50,25 @@
 	
 	<model-resource>
 		<model-name>com.amf.user.profile.model.BasicInfo</model-name>
+		<portlet-ref>
+			<portlet-name>user-profile</portlet-name>
+		</portlet-ref>
+		<permissions>
+			<supports>
+				<action-key>VIEW</action-key>
+			</supports>
+			<site-member-defaults>
+				<action-key>VIEW</action-key>
+			</site-member-defaults>
+			<guest-defaults>
+				<action-key>VIEW</action-key>
+			</guest-defaults>
+			<guest-unsupported />
+		</permissions>
+	</model-resource>
+	
+	<model-resource>
+		<model-name>com.amf.user.profile.model.UserProfile</model-name>
 		<portlet-ref>
 			<portlet-name>user-profile</portlet-name>
 		</portlet-ref>

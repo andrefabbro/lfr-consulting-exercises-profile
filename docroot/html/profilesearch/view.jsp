@@ -1,129 +1,106 @@
+<%@page import="org.apache.jasper.tagplugins.jstl.core.ForEach"%>
 <%@ include file="init.jsp"%>
 <%
     String redirect = ParamUtil.getString(request, "redirect");
     String keywords = ParamUtil.getString(request, "keywords");
+    int total = (Integer) renderRequest.getAttribute("total");
+    List<ResultRow> resultRows = (List<ResultRow>) renderRequest.getAttribute("resultRows");
 %>
 
-<liferay-portlet:renderURL varImpl="searchURL">
-    <portlet:param name="mvcPath" value="/html/parts/search.jsp" />
-</liferay-portlet:renderURL>
+<portlet:actionURL name="searchAction" var="searchActionURL" />
 
-<aui:form action="<%= searchURL %>" method="get" name="fm">
-    
-    <liferay-portlet:renderURLParams varImpl="searchURL" />
+<aui:form action="<%= searchActionURL %>" method="post" name="fm">
     
     <aui:input name="redirect" type="hidden" value="<%= redirect %>" />
 
-    <liferay-ui:header
-        backURL="<%= redirect %>"
-        title="search"
-    />
+    <liferay-ui:header backURL="<%= redirect %>" title="Profile Search" />
+    
+    <span class="aui-search-bar">
+        <aui:input inlineField="<%= true %>" label="" name="keywords" size="120" title="search-entries" type="text" value="<%= keywords %>" />
+        <aui:button type="submit" value="search" />
+        <aui:button onclick="doSearch();" value="Ajax Request" type="button" name="searchajax" />
+    </span>
+    
+    <div id="searchResults">
+    
+	    <c:if test="${param.keywords != null}">
+	    	<br />
+	    	<h3><c:out value="Search Results for: ${param.keywords}" /></h3>
+	    </c:if>
+	    
+	    <br />
+	    
+	    <c:forEach items="${resultRows}" var="row">
+	    	<p>
+	    		<a href="/member/-/profile/view/${row.data['title']}">
+	    		<strong><c:out value="${row.data['title']}" /></strong>
+	    		<br />
+	    		<c:out value="${row.data['content']}" />
+	    		</a>
+	    	</p>
+	    </c:forEach>
+    
+    </div>
+    
+    <div id="wait"
+		style="display:none; width: 69px; height: 89px; border: 1px solid black; position: absolute; top: 50%; left: 50%; padding: 2px;">
+		<img src='http://www.w3schools.com/jquery/demo_wait.gif' width="64" height="64" /><br>Loading...
+	</div>
 
-    <%
-    PortletURL portletURL = renderResponse.createRenderURL();
-
-    portletURL.setParameter("mvcPath", "/html/profilesearch/view.jsp");
-    portletURL.setParameter("redirect", redirect);
-    portletURL.setParameter("keywords", keywords);
-
-    List<String> headerNames = new ArrayList<String>();
-
-    headerNames.add("#");
-    headerNames.add("partTitle");
-
-    SearchContainer searchContainer = new SearchContainer(
-    	renderRequest, null, null, SearchContainer.DEFAULT_CUR_PARAM, 
-    	SearchContainer.DEFAULT_DELTA, portletURL, headerNames, 
-    	LanguageUtil.format(pageContext, "no-entries-were-found-that-matched-the-keywords-x", "<strong>" + HtmlUtil.escape(keywords) + "</strong>"));
-
-    try {
-        Indexer indexer = IndexerRegistryUtil.getIndexer(GeneralProfile.class);
-
-        SearchContext searchContext = SearchContextFactory.getInstance(request);
-
-        searchContext.setEnd(searchContainer.getEnd());
-        searchContext.setKeywords(keywords);
-        searchContext.setStart(searchContainer.getStart());
-
-        Hits results = indexer.search(searchContext);
-
-        int total = results.getLength();
-
-        searchContainer.setTotal(total);
-
-        List resultRows = searchContainer.getResultRows();
-
-        for (int i = 0; i < results.getDocs().length; i++) {
-            Document doc = results.doc(i);
-
-            ResultRow row = new ResultRow(doc, i, i);
-
-            // Position
-
-            row.addText(searchContainer.getStart() + i + 1 + StringPool.PERIOD);
-
-            // GeneralProfile
-
-            long entityId = GetterUtil.getLong(doc.get(Field.ENTRY_CLASS_PK));
-
-            GeneralProfile entity = null;
-
-            try {
-            	entity = GeneralProfileLocalServiceUtil.getGeneralProfile(entityId);
-
-            	entity = entity.toEscapedModel();
-            }
-            catch (Exception e) {
-                if (_log.isWarnEnabled()) {
-                    _log.warn("Parts search index is stale and contains entry " + entityId);
-                }
-                continue;
-            }
-
-            PortletURL rowURL = renderResponse.createRenderURL();
-            
-            String currentURL = PortalUtil.getCurrentURL(request);
-            
-            rowURL.setParameter("mvcPath", "/html/userprofile/view.jsp");
-            rowURL.setParameter("redirect", currentURL);
-            rowURL.setParameter("screenName", entity.getUserName());
-
-            row.addText(entity.getUserName(), rowURL);
-
-            // Add result row
-
-            resultRows.add(row);
-        }
-    %>
-
-        <span class="aui-search-bar">
-            <aui:input inlineField="<%= true %>" label="" name="keywords" size="30" title="search-entries" type="text" value="<%= keywords %>" />
-
-            <aui:button type="submit" value="search" />
-        </span>
-
-        <br /><br />
-
-        <liferay-ui:search-iterator searchContainer="<%= searchContainer %>" />
-
-    <%
-    }
-    catch (Exception e) {
-        _log.error(e.getMessage());
-    }
-    %>
 </aui:form>
 
 <%
 if (Validator.isNotNull(keywords)) {
     String currentURL = PortalUtil.getCurrentURL(request);
-	
     PortalUtil.addPortletBreadcrumbEntry(request, LanguageUtil.get(pageContext, "search") + ": " + keywords, currentURL);
 }
 %>
 
-<%!
-private static Log _log = LogFactoryUtil.getLog("profilesearch.docroot.html.view_jsp");
-%>
+<portlet:renderURL var="auiAjaxURL">
+	<portlet:param name="mvcPath" value="/html/jsps/aui_ajax.jsp"/>
+</portlet:renderURL>
 
-        
+<portlet:resourceURL var="searchAjaxURL">
+    <portlet:param name="searchAjaxURL" value="/html/profilesearch/view.jsp" />
+</portlet:resourceURL>
+
+<aui:script>
+    function doSearch() {
+    
+    	AUI().use('aui-base','aui-io-request', function(A) {
+		
+			A.one('#wait').setStyle('display', 'block');
+			
+			var allRows = "";
+			var searchStr = document.getElementById("<portlet:namespace />keywords").value;
+			
+			A.io.request('<%= searchAjaxURL %>', {
+		  		dataType: 'json',
+		  		method: 'POST',
+		  		data: { 
+		  			<portlet:namespace/>keywords: searchStr, 
+		  			<portlet:namespace/>start: '0', 
+		  			<portlet:namespace/>end: '5'
+		  		},
+		  		on: {
+					success: function() {
+						
+						var data = this.get('responseData');
+						
+						A.Array.each(data, function(obj, idx) {
+							
+							var tableRow = '<p><a href="/member/-/profile/view/' + obj.title + '"><strong>' + obj.title + '</strong><br />' + obj.content + '</a></p>';
+		  	                
+		  	                allRows = allRows.trim() + tableRow.trim();
+		  	                
+		  	                A.one('#searchResults').empty();
+		  	                A.one('#searchResults').setHTML(allRows.trim());
+		  	                A.one('#wait').setStyle('display','none');
+		     			});
+		    		}
+		  		}
+			});
+		});
+		
+    }
+</aui:script>

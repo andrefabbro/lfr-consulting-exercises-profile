@@ -7,6 +7,7 @@ import com.amf.user.profile.service.GeneralProfileLocalServiceUtil;
 import com.amf.user.profile.service.GeneralProfileServiceUtil;
 import com.amf.user.profile.service.MovieInterestLocalServiceUtil;
 import com.amf.user.profile.service.MovieInterestServiceUtil;
+import com.amf.user.profile.service.UserProfilePersistenceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.servlet.SessionErrors;
@@ -199,7 +200,7 @@ public class UserProfile extends MVCPortlet {
 
 		this.setUpCommonAttr(request);
 
-		String screenName = ParamUtil.getString(request, "screenName");
+		String screenName = ParamUtil.getString(request, "screenName", StringPool.BLANK);
 
 		try {
 			// load user info, if the screename isn't in the URL, it will show

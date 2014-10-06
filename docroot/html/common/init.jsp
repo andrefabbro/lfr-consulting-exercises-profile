@@ -54,5 +54,7 @@
 <%@ page import="com.liferay.portal.security.permission.ActionKeys"%>
 <%@ page import="com.liferay.portal.kernel.servlet.SessionErrors"%>
 
-<%@ page import="com.amf.user.profile.UserProfileTO"%>
+<%@ page import="com.amf.user.profile.model.UserProfile"%>
+<%@ page
+	import="com.amf.user.profile.service.UserProfilePersistenceUtil"%>
 

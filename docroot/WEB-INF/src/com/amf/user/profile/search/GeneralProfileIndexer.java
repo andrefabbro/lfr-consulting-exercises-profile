@@ -92,8 +92,16 @@ public class GeneralProfileIndexer extends BaseIndexer {
 		document.addKeyword(Field.GROUP_ID, getSiteGroupId(entity.getGroupId()));
 		document.addKeyword(Field.SCOPE_GROUP_ID, entity.getGroupId());
 		document.addKeyword(Field.USER_ID, entity.getUserId());
+		
+		document.addText(Field.TITLE, entity.getUserName());
+		document.addText(Field.DESCRIPTION, entity.getAboutMe());
+		
+		document.addText(Field.CONTENT, entity.getAboutMe());
+		
 		document.addText("aboutMe", entity.getAboutMe());
 		document.addText("favoriteQuotes", entity.getFavoriteQuotes());
+		
+		System.out.println("GeneralProfile lucene created with successfully");
 
 		return document;
 	}
