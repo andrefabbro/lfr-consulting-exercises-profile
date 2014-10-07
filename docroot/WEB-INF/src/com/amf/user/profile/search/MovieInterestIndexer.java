@@ -49,7 +49,7 @@ public class MovieInterestIndexer extends BaseIndexer {
 		long entryClassPK, String actionId)
 		throws Exception {
 
-		// TODO: modificar!
+		// TODO: change!
 		// return MovieInterestPermission.contains(permissionChecker,
 		// entryClassPK, ActionKeys.VIEW);
 		return true;

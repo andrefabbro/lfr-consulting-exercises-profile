@@ -138,10 +138,10 @@ public class ProfileSearch extends MVCPortlet {
 			ParamUtil.print(request);
 
 			String keywords = request.getParameter("keywords");
-			
+
 			int start = 0;
 			int end = 5;
-			
+
 			if (request.getParameter("start") != null)
 				start = Integer.valueOf(request.getParameter("start"));
 			if (request.getParameter("end") != null)
@@ -153,12 +153,12 @@ public class ProfileSearch extends MVCPortlet {
 			this.performSearch(keywords, start, end, searchContext);
 
 			JSONArray usersJsonArray = JSONFactoryUtil.createJSONArray();
-			
+
 			JSONObject root = JSONFactoryUtil.createJSONObject();
 			root.put("start", start);
 			root.put("end", end);
 			root.put("total", total);
-			
+
 			for (ResultRow row : resultRows) {
 
 				String content =
@@ -171,8 +171,11 @@ public class ProfileSearch extends MVCPortlet {
 
 				usersJsonArray.put(jsonUser);
 			}
+
+			if (total > 0)
+				root.put("results", usersJsonArray);
 			
-			root.put("results", usersJsonArray);
+			System.out.println(root.toString());
 
 			PrintWriter out = response.getWriter();
 			out.print(root.toString());

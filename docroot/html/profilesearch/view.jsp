@@ -58,8 +58,8 @@
 		<img src='http://www.w3schools.com/jquery/demo_wait.gif' width="64" height="64" /><br>Loading...
 	</div>
 	
-	<div id="no-results-message" style="display:none;">
-		<liferay-ui:message key="no-members-found-with-criteria" />
+	<div id="no-results-message" style="display: none;">
+		<liferay-ui:message key="No members found with the given search criteria. Please try again using different search criteria." />
 	</div>
 
 </aui:form>
@@ -95,8 +95,9 @@
 						if(searchStr != '') A.one('#searchHeader').setHTML('<h3>Search Results for: ' + searchStr + '</h3>');
 						
 						A.one('#pagination').empty();
+						A.one('#searchResults').empty();
 						
-						if(data.total >= 0) {
+						if(data.total > 0) {
 						
 							A.one('#no-results-message').setStyle('display', 'none');
 							
@@ -124,6 +125,7 @@
 			     			});
 						} else {
 							A.one('#no-results-message').setStyle('display', 'block');
+							A.one('#wait').setStyle('display','none');
 						}
 		    		}
 		  		}

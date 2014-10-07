@@ -49,7 +49,7 @@ public class UserProfileIndexer extends BaseIndexer {
 		long entryClassPK, String actionId)
 		throws Exception {
 
-		// TODO: modificar!
+		// TODO: change!
 		// return UserProfileTOPermission.contains(permissionChecker,
 		// entryClassPK, ActionKeys.VIEW);
 		return true;
