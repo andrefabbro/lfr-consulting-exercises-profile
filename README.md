@@ -12,9 +12,9 @@ This portlet is the solution for the Liferay Consulting exercises "User Profile 
 ### Steps to Solution for Exercise 1
 
 1. Edit the hosts file adding the amf.com as a host, like the follow:
-```
-127.0.0.1       localhost amf.com
-```
+  ```
+  127.0.0.1       localhost amf.com
+  ```
 2. Create a page named "Member" with 1 Column and the friendly URL "/member", check the option "Hide from Navigation Menu".
 3. Go to http://amf.com:8080/member/ and pull the portlet "User Profile" (under Sample category) to the page.
 4. Create some users.
