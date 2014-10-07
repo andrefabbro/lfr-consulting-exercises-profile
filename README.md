@@ -9,10 +9,10 @@ This portlet is the solution for the Liferay Consulting exercises "User Profile 
 2. Clone that repo into the project.
 3. Deploy to any Liferay 6.2 EE Portal using Liferay SDK or generated WAR.
 
-Solution for Exercise 1
-1. Edit the hosts file adding the amf.com as a host
+### Solution for Exercise 1
 
-
-
-
+1. Edit the hosts file adding the amf.com as a host, like the follow:
+```
+127.0.0.1       localhost amf.com
+```
 
