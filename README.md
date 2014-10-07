@@ -59,6 +59,6 @@ BaseIndexer, but I didn't find out how to do it exactly.
 
 The second was about to use the Liferay's built in pagination tag on the search results. 
 I realized that tag is used with searchContainer built in tag, but I didn't find a way 
-to use the searchContainer with AJAX mode, so I made it happen by implementing 
+to use the searchContainer with AJAX mode, so I've made it happen by implementing 
 my own pagination algorithm.
 
