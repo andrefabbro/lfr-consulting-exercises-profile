@@ -16,6 +16,7 @@ import com.liferay.portal.kernel.search.SearchException;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.util.bridges.mvc.MVCPortlet;
 
@@ -42,26 +43,30 @@ import javax.portlet.ResourceResponse;
  */
 public class ProfileSearch extends MVCPortlet {
 
+	private List<ResultRow> resultRows = new ArrayList<ResultRow>();
+
+	private int total = 0;
+
+	private Hits results;
+
+	private String prepareContent(String content) {
+
+		String aux = StringUtil.wrap(content);
+		String[] arrcontent = StringUtil.split(aux, StringPool.NEW_LINE);
+
+		return (arrcontent.length > 1) ? arrcontent[0] + StringPool.SPACE +
+			StringPool.TRIPLE_PERIOD : arrcontent[0];
+	}
+
 	/**
 	 * Perform the search against the lucene
 	 */
-	private void proccessSearch(PortletRequest request, PortletResponse response)
+	private void performSearch(
+		String keywords, int start, int end, SearchContext searchContext)
 		throws IOException, PortletException, SearchException {
-
-		String keywords =
-			ParamUtil.getString(request, "keywords", StringPool.BLANK);
-
-		// ParamUtil.print(request);
-		// System.out.println("keywords: " + keywords);
-
-		int start = ParamUtil.getInteger(request, "start", 0);
-		int end = ParamUtil.getInteger(request, "end", 5);
 
 		Indexer indexer =
 			IndexerRegistryUtil.getIndexer(com.amf.user.profile.model.UserProfile.class);
-
-		SearchContext searchContext =
-			SearchContextFactory.getInstance(PortalUtil.getHttpServletRequest(request));
 
 		StringBuilder query = new StringBuilder("");
 		if (!keywords.equals(StringPool.BLANK)) {
@@ -90,14 +95,11 @@ public class ProfileSearch extends MVCPortlet {
 		searchContext.setKeywords(query.toString());
 		searchContext.setStart(start);
 
-		Hits results = indexer.search(searchContext);
-		int total = results.getLength();
+		results = indexer.search(searchContext);
+		total = results.getLength();
+		resultRows = new ArrayList<ResultRow>();
 
-		List<com.amf.user.profile.model.UserProfile> profiles =
-			new ArrayList<com.amf.user.profile.model.UserProfile>();
-
-		List<ResultRow> resultRows = new ArrayList<ResultRow>();
-
+		// The search process should not hit the database at all, only Lucene
 		if (results != null) {
 
 			List<Document> documents = results.toList();
@@ -119,52 +121,61 @@ public class ProfileSearch extends MVCPortlet {
 				if (row.getData() == null)
 					row.setData(new HashMap<String, Object>());
 				row.getData().put(Field.TITLE, title);
-				row.getData().put(Field.CONTENT, content);
+				row.getData().put(Field.CONTENT, prepareContent(content));
 
 				pos++;
 				resultRows.add(row);
 			}
 		}
-
-		request.setAttribute("total", total);
-		request.setAttribute("resultRows", resultRows);
 	}
 
 	@Override
 	public void serveResource(ResourceRequest request, ResourceResponse response)
 		throws IOException, PortletException {
 
-		System.out.println("Hello World from Ajax Request!!!!!!!!");
-		
 		try {
-			
+
 			ParamUtil.print(request);
-			
-			
+
 			String keywords = request.getParameter("keywords");
 			
-			System.out.println("Keywords: " + keywords);
+			int start = 0;
+			int end = 5;
+			
+			if (request.getParameter("start") != null)
+				start = Integer.valueOf(request.getParameter("start"));
+			if (request.getParameter("end") != null)
+				end = Integer.valueOf(request.getParameter("end"));
 
-			this.proccessSearch(request, response);
+			SearchContext searchContext =
+				SearchContextFactory.getInstance(PortalUtil.getHttpServletRequest(request));
 
-			JSONObject jsonUser = null;
+			this.performSearch(keywords, start, end, searchContext);
+
 			JSONArray usersJsonArray = JSONFactoryUtil.createJSONArray();
-
-			List<ResultRow> resultRows =
-				(List<ResultRow>) request.getAttribute("resultRows");
-
+			
+			JSONObject root = JSONFactoryUtil.createJSONObject();
+			root.put("start", start);
+			root.put("end", end);
+			root.put("total", total);
+			
 			for (ResultRow row : resultRows) {
-				jsonUser = JSONFactoryUtil.createJSONObject();
+
+				String content =
+					prepareContent((String) row.getData().get(Field.CONTENT));
+
+				JSONObject jsonUser = JSONFactoryUtil.createJSONObject();
 				jsonUser.put(
 					Field.TITLE, (String) row.getData().get(Field.TITLE));
-				jsonUser.put(
-					Field.CONTENT, (String) row.getData().get(Field.CONTENT));
+				jsonUser.put(Field.CONTENT, content);
 
 				usersJsonArray.put(jsonUser);
 			}
+			
+			root.put("results", usersJsonArray);
 
 			PrintWriter out = response.getWriter();
-			out.print(usersJsonArray.toString());
+			out.print(root.toString());
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -173,26 +184,29 @@ public class ProfileSearch extends MVCPortlet {
 		super.serveResource(request, response);
 	}
 
-	public void searchAction(ActionRequest request, ActionResponse response)
-		throws IOException, PortletException {
-
-		try {
-			this.proccessSearch(request, response);
-		}
-		catch (SearchException e) {
-			e.printStackTrace();
-		}
-
-		PortalUtil.copyRequestParameters(request, response);
-	}
-
 	@Override
 	public void doView(RenderRequest request, RenderResponse response)
 		throws IOException, PortletException {
 
 		if (request.getAttribute("resultRows") == null) {
 			try {
-				this.proccessSearch(request, response);
+
+				String keywords =
+					ParamUtil.getString(request, "keywords", StringPool.BLANK);
+
+				int start = ParamUtil.getInteger(request, "start", 0);
+				int end = ParamUtil.getInteger(request, "end", 3);
+
+				SearchContext searchContext =
+					SearchContextFactory.getInstance(PortalUtil.getHttpServletRequest(request));
+
+				performSearch(keywords, start, end, searchContext);
+
+				request.setAttribute("start", start);
+				request.setAttribute("end", end);
+				request.setAttribute("total", total);
+				request.setAttribute("resultRows", resultRows);
+
 			}
 			catch (SearchException e) {
 				e.printStackTrace();

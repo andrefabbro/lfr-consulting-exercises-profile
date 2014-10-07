@@ -203,7 +203,7 @@ public class UserProfilePersistenceUtil {
 		throws SystemException, PortalException {
 
 		UserLocalServiceUtil.updateUser(
-			user.getPrimaryKey(), null, user.getPassword(), user.getPassword(),
+			user.getPrimaryKey(), null, null, null,
 			false, user.getReminderQueryQuestion(),
 			user.getReminderQueryAnswer(), user.getScreenName(),
 			user.getEmailAddress(), user.getFacebookId(), user.getOpenId(),
